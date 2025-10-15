@@ -45,11 +45,12 @@ export default function RecipientsScreen() {
   };
 
   const filteredRecipients = recipients.filter(recipient =>
-    recipient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    recipient.country.toLowerCase().includes(searchQuery.toLowerCase())
+    recipient?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    recipient?.country?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const groupedRecipients = filteredRecipients.reduce((acc, recipient) => {
+    if (!recipient?.name) return acc;
     const firstLetter = recipient.name[0].toUpperCase();
     if (!acc[firstLetter]) {
       acc[firstLetter] = [];
@@ -99,14 +100,14 @@ export default function RecipientsScreen() {
               >
                 <View style={styles.recipientLeft}>
                   <View style={[styles.avatar, { backgroundColor: isDark ? colors.primary + '30' : '#EBF5FF' }]}>
-                    <Text style={[styles.avatarText, { color: colors.primary }]}>{recipient.name[0]}</Text>
+                    <Text style={[styles.avatarText, { color: colors.primary }]}>{recipient?.name?.[0] || '?'}</Text>
                   </View>
                   <View style={styles.recipientInfo}>
-                    <Text style={[styles.recipientName, { color: colors.text }]}>{recipient.name}</Text>
+                    <Text style={[styles.recipientName, { color: colors.text }]}>{recipient?.name || 'Unknown'}</Text>
                     <Text style={[styles.recipientDetails, { color: colors.textSecondary }]}>
-                      {recipient.flag} {recipient.country} • {recipient.phone}
+                      {recipient?.flag || ''} {recipient?.country || 'Unknown'} • {recipient?.phone || 'N/A'}
                     </Text>
-                    {recipient.bank && (
+                    {recipient?.bank && (
                       <Text style={[styles.recipientBank, { color: colors.textSecondary }]}>{recipient.bank}</Text>
                     )}
                   </View>

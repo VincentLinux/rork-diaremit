@@ -180,17 +180,19 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
             fullError: recipientsError
           });
         } else if (recipientsData) {
-          const formattedRecipients = recipientsData.map((r: any) => ({
-            id: r.id,
-            user_id: r.user_id,
-            name: r.name,
-            phone: r.phone || '',
-            email: r.email || undefined,
-            country: r.country,
-            flag: r.flag || '',
-            bank: r.bank || undefined,
-            account_number: r.account_number || undefined,
-          }));
+          const formattedRecipients = recipientsData
+            .filter((r: any) => r && r.id && r.name && r.country)
+            .map((r: any) => ({
+              id: r.id,
+              user_id: r.user_id,
+              name: r.name || 'Unknown',
+              phone: r.phone || '',
+              email: r.email || undefined,
+              country: r.country || 'Unknown',
+              flag: r.flag || '',
+              bank: r.bank || undefined,
+              account_number: r.account_number || undefined,
+            }));
           setRecipients(formattedRecipients);
         }
       } catch (error) {
@@ -308,6 +310,10 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
         return { error: error.message };
       }
       
+      if (!data.name || !data.country) {
+        return { error: 'Invalid recipient data received' };
+      }
+      
       const formattedRecipient: Recipient = {
         id: data.id,
         user_id: data.user_id,
@@ -404,6 +410,10 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
       if (error) {
         console.error('Error updating recipient:', error);
         return { error: error.message };
+      }
+      
+      if (!data.name || !data.country) {
+        return { error: 'Invalid recipient data received' };
       }
       
       const formattedRecipient: Recipient = {
