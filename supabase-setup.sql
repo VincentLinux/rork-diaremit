@@ -25,6 +25,11 @@ CREATE INDEX IF NOT EXISTS idx_balances_currency ON public.balances(currency);
 -- Enable Row Level Security
 ALTER TABLE public.balances ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own balances" ON public.balances;
+DROP POLICY IF EXISTS "Users can insert their own balances" ON public.balances;
+DROP POLICY IF EXISTS "Users can update their own balances" ON public.balances;
+
 -- RLS Policies for balances
 CREATE POLICY "Users can view their own balances"
   ON public.balances FOR SELECT
@@ -67,6 +72,10 @@ CREATE INDEX IF NOT EXISTS idx_balance_transactions_created_at ON public.balance
 
 -- Enable Row Level Security
 ALTER TABLE public.balance_transactions ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Users can view their own balance transactions" ON public.balance_transactions;
+DROP POLICY IF EXISTS "Users can insert their own balance transactions" ON public.balance_transactions;
 
 -- RLS Policies for balance_transactions
 CREATE POLICY "Users can view their own balance transactions"
