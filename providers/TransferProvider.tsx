@@ -330,15 +330,20 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
   }, [user]);
 
   const deleteRecipient = useCallback(async (recipientId: string) => {
+    console.log('deleteRecipient called with:', { recipientId, userId: user?.id, isSupabaseConfigured });
+    
     if (!user) {
+      console.error('Delete failed: No user logged in');
       return { error: 'No user logged in' };
     }
     
     if (!isSupabaseConfigured) {
+      console.error('Delete failed: Database not configured');
       return { error: 'Database not configured' };
     }
     
     try {
+      console.log('Attempting to delete recipient from database...');
       const { error } = await supabase
         .from('recipients')
         .delete()
@@ -346,15 +351,22 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
         .eq('user_id', user.id);
       
       if (error) {
-        console.error('Error deleting recipient:', error);
+        console.error('Error deleting recipient from database:', {
+          message: error.message,
+          code: error.code,
+          details: error.details,
+          hint: error.hint
+        });
         return { error: error.message };
       }
       
+      console.log('Recipient deleted successfully from database, updating local state');
       setRecipients(prev => prev.filter(r => r.id !== recipientId));
+      console.log('Local state updated successfully');
       return { error: null };
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete recipient';
-      console.error('Exception deleting recipient:', errorMessage);
+      console.error('Exception deleting recipient:', errorMessage, error);
       return { error: errorMessage };
     }
   }, [user]);
