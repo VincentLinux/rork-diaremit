@@ -161,20 +161,37 @@ export default function WelcomeScreen() {
   }, [fadeAnim, slideAnim, buttonFadeAnim, buttonSlideAnim, setLanguage, session, loading]);
   
   const handleLanguageSelect = (language: Language) => {
-    if (!language || !['en', 'sv', 'fr', 'no', 'dk'].includes(language)) {
-      console.log('Invalid language:', language);
-      return;
+    try {
+      if (!language) {
+        console.log('No language provided');
+        return;
+      }
+      
+      const validLanguages: Language[] = ['en', 'sv', 'fr', 'no', 'dk'];
+      
+      let sanitizedLanguage: Language;
+      if (typeof language === 'string') {
+        const trimmed = language.trim().toLowerCase() as Language;
+        if (trimmed.length > 10) {
+          console.log('Language code too long:', trimmed);
+          return;
+        }
+        if (!validLanguages.includes(trimmed)) {
+          console.log('Invalid language:', trimmed);
+          return;
+        }
+        sanitizedLanguage = trimmed;
+      } else {
+        console.log('Invalid language type:', typeof language);
+        return;
+      }
+      
+      setSelectedLanguage(sanitizedLanguage);
+      setLanguage(sanitizedLanguage);
+      setShowLanguageModal(false);
+    } catch (error) {
+      console.error('Error selecting language:', error);
     }
-    
-    const sanitizedLanguage = language.trim() as Language;
-    if (sanitizedLanguage.length > 10) {
-      console.log('Language code too long:', sanitizedLanguage);
-      return;
-    }
-    
-    setSelectedLanguage(sanitizedLanguage);
-    setLanguage(sanitizedLanguage);
-    setShowLanguageModal(false);
   };
   
   const handleGetStarted = () => {

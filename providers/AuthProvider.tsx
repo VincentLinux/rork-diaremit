@@ -114,16 +114,41 @@ export const [AuthProvider, useAuth] = createContextHook<AuthContextType>(() => 
       data: { subscription },
     } = supabase.auth.onAuthStateChange(async (event: any, session: Session | null) => {
       try {
-        if (!event) return;
+        if (!event) {
+          console.log('Auth state change: no event');
+          return;
+        }
         
-        const sanitizedEvent = typeof event === 'string' ? event.trim() : String(event).trim();
+        let sanitizedEvent = '';
+        try {
+          if (typeof event === 'string') {
+            sanitizedEvent = event.trim().toUpperCase();
+          } else if (event && typeof event === 'object' && 'toString' in event) {
+            sanitizedEvent = String(event).trim().toUpperCase();
+          } else {
+            sanitizedEvent = 'UNKNOWN';
+          }
+          
+          if (sanitizedEvent.length > 50) {
+            console.warn('Event string too long, truncating:', sanitizedEvent.substring(0, 50));
+            sanitizedEvent = sanitizedEvent.substring(0, 50);
+          }
+          
+          const validEvents = ['SIGNED_IN', 'SIGNED_OUT', 'TOKEN_REFRESHED', 'USER_UPDATED', 'PASSWORD_RECOVERY'];
+          if (!validEvents.includes(sanitizedEvent)) {
+            console.warn('Unknown auth event:', sanitizedEvent);
+          }
+        } catch (err) {
+          console.error('Error sanitizing event:', err);
+          sanitizedEvent = 'UNKNOWN';
+        }
+        
         console.log('Auth state changed:', sanitizedEvent, session?.user?.email);
         
         setSession(session);
         setUser(session?.user ?? null);
         
         if (session?.user) {
-          // For email confirmation events, ensure profile is created
           if (sanitizedEvent === 'SIGNED_IN' || sanitizedEvent === 'TOKEN_REFRESHED') {
             await fetchProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
           }
