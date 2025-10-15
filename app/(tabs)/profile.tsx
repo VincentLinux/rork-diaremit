@@ -29,6 +29,7 @@ import { useLanguage, Language } from "@/providers/LanguageProvider";
 import { useAuth } from "@/providers/AuthProvider";
 import { useTransfer } from "@/providers/TransferProvider";
 import { router } from "expo-router";
+import Constants from "expo-constants";
 
 
 
@@ -284,7 +285,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         {/* Version Info */}
-        <Text style={[styles.versionText, { color: colors.textSecondary }]}>{t('version')} 1.0.0</Text>
+        <Text style={[styles.versionText, { color: colors.textSecondary }]}>{t('version')} {Constants.expoConfig?.version || '1.0.0'}</Text>
       </ScrollView>
       
       {/* Language Selection Modal */}
