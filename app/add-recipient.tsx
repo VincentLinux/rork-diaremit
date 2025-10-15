@@ -39,8 +39,8 @@ export default function AddRecipientScreen() {
   const selectedCountryData = countries.find(c => c.name === country);
 
   const handleSave = async () => {
-    if (!name || !phone || !email || !country) {
-      Alert.alert(t('error'), "Please fill in all required fields (name, phone, email, and country)");
+    if (!name || !phone || !country) {
+      Alert.alert(t('error'), "Please fill in all required fields (name, phone, and country)");
       return;
     }
 
@@ -140,7 +140,7 @@ export default function AddRecipientScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>{t('emailAddress')} *</Text>
+            <Text style={[styles.label, { color: colors.text }]}>{t('emailAddress')}</Text>
             <TextInput
               style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
               value={email}
