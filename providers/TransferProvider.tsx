@@ -281,6 +281,10 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
       return { error: 'Database not configured' };
     }
     
+    if (!recipient.email) {
+      return { error: 'Email is required' };
+    }
+    
     try {
       const { data, error } = await supabase
         .from('recipients')
@@ -289,7 +293,7 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
             user_id: user.id,
             name: recipient.name,
             phone: recipient.phone,
-            email: recipient.email || null,
+            email: recipient.email,
             country: recipient.country,
             flag: recipient.flag,
             bank: recipient.bank || null,
@@ -364,13 +368,17 @@ export const [TransferProvider, useTransfer] = createContextHook(() => {
       return { error: 'Database not configured' };
     }
     
+    if (updates.email !== undefined && !updates.email) {
+      return { error: 'Email is required' };
+    }
+    
     try {
       const { data, error } = await supabase
         .from('recipients')
         .update({
           name: updates.name,
           phone: updates.phone,
-          email: updates.email || null,
+          email: updates.email,
           country: updates.country,
           flag: updates.flag,
           bank: updates.bank || null,

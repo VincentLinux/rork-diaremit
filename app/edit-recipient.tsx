@@ -55,8 +55,8 @@ export default function EditRecipientScreen() {
   }, [params.recipientId, recipients]);
 
   const handleSave = async () => {
-    if (!name || !phone || !country) {
-      Alert.alert(t('error'), "Please fill in all required fields");
+    if (!name || !phone || !email || !country) {
+      Alert.alert(t('error'), "Please fill in all required fields (name, phone, email, and country)");
       return;
     }
 
@@ -69,7 +69,7 @@ export default function EditRecipientScreen() {
     const result = await updateRecipient(recipientId, {
       name,
       phone,
-      email: email || undefined,
+      email,
       country,
       flag: selectedCountryData?.flag || "",
       bank: bank || undefined,
@@ -162,12 +162,12 @@ export default function EditRecipientScreen() {
           </View>
 
           <View style={styles.inputGroup}>
-            <Text style={[styles.label, { color: colors.text }]}>{t('emailAddress')}</Text>
+            <Text style={[styles.label, { color: colors.text }]}>{t('emailAddress')} *</Text>
             <TextInput
               style={[styles.input, { backgroundColor: colors.card, borderColor: colors.border, color: colors.text }]}
               value={email}
               onChangeText={setEmail}
-              placeholder={t('enterEmailOptional')}
+              placeholder={t('enterEmail')}
               placeholderTextColor="#9CA3AF"
               keyboardType="email-address"
               autoCapitalize="none"
