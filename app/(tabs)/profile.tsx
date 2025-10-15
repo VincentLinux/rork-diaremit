@@ -285,6 +285,7 @@ export default function ProfileScreen() {
         </TouchableOpacity>
 
         {/* Version Info */}
+        {/* Now as a variable */}
         <Text style={[styles.versionText, { color: colors.textSecondary }]}>{t('version')} {Constants.expoConfig?.version || '1.0.0'}</Text>
       </ScrollView>
       
