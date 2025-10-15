@@ -112,22 +112,27 @@ export const [AuthProvider, useAuth] = createContextHook<AuthContextType>(() => 
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange(async (event: string, session: Session | null) => {
-      if (!event || typeof event !== 'string') return;
-      
-      const sanitizedEvent = event.trim();
-      console.log('Auth state changed:', sanitizedEvent, session?.user?.email);
-      
-      setSession(session);
-      setUser(session?.user ?? null);
-      
-      if (session?.user) {
-        // For email confirmation events, ensure profile is created
-        if (sanitizedEvent === 'SIGNED_IN' || sanitizedEvent === 'TOKEN_REFRESHED') {
-          await fetchProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
+    } = supabase.auth.onAuthStateChange(async (event: any, session: Session | null) => {
+      try {
+        if (!event) return;
+        
+        const sanitizedEvent = typeof event === 'string' ? event.trim() : String(event).trim();
+        console.log('Auth state changed:', sanitizedEvent, session?.user?.email);
+        
+        setSession(session);
+        setUser(session?.user ?? null);
+        
+        if (session?.user) {
+          // For email confirmation events, ensure profile is created
+          if (sanitizedEvent === 'SIGNED_IN' || sanitizedEvent === 'TOKEN_REFRESHED') {
+            await fetchProfile(session.user.id, session.user.email, session.user.user_metadata?.full_name);
+          }
+        } else {
+          setProfile(null);
+          setLoading(false);
         }
-      } else {
-        setProfile(null);
+      } catch (error) {
+        console.error('Error in auth state change handler:', error instanceof Error ? error.message : String(error));
         setLoading(false);
       }
     });
